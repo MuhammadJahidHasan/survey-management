@@ -1,7 +1,9 @@
-import { appConfig } from "../common/app-config";
+import { appConfig } from "../common/config/app-config";
 import { IDbService } from "../database/db.interface";
 import bcrypt from 'bcrypt';
 import { signToken } from "../utils/jwt.utils";
+import { BadRequestException } from "../common/exception/bad-request-exception";
+import { UnauthorizedException } from "../common/exception/unauthrozied-exception";
 
 export interface IAuthService {
     signup(data: SignupInput): Promise<any>;
@@ -12,7 +14,7 @@ interface SignupInput {
     name?: string;
     email: string;
     password: string;
-    role: 'ADMIN' | 'OFFICER';
+    role: 'ADMIN' | 'OFFICER'; // TODO: Use enum
 }
   
   interface LoginInput {
@@ -26,7 +28,7 @@ class AuthService implements IAuthService {
         const existingUser = await this.dbService.getUser(data.email);
 
         if (existingUser) {
-            throw new Error('Email already registered');
+            throw new BadRequestException('Email already registered');
         }
 
         const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -58,7 +60,7 @@ class AuthService implements IAuthService {
         const user = await this.dbService.getUser(data.email);
 
         if (!user) {
-            throw new Error('Invalid email or password');
+            throw new UnauthorizedException('Invalid email or password');
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -67,7 +69,7 @@ class AuthService implements IAuthService {
         );
 
         if (!isPasswordValid) {
-            throw new Error('Invalid email or password');
+            throw new UnauthorizedException('Invalid email or password');
         }
 
         const token = signToken({
@@ -88,6 +90,6 @@ class AuthService implements IAuthService {
 
 }
 
-export const getAuthService = (dbService: IDbService): IAuthService => {
+export const getAuthService = async (dbService: IDbService): Promise<IAuthService> => {
     return new AuthService(dbService)
 }

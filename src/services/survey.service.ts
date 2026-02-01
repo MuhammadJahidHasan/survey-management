@@ -1,4 +1,5 @@
 import { IDbService } from "../database/db.interface"
+import { BadRequestException } from "../common/exception/bad-request-exception";
 
 export interface ISurveyService {
     createSurvey(
@@ -63,7 +64,7 @@ class SurveyService implements ISurveyService{
         answers: any[]
     ) {
         if (!answers || answers.length === 0) {
-            throw new Error('Answers are required');
+            throw new BadRequestException('Answers are required');
         }
 
         // TODO: Need to database transaction here for create submission and answer
@@ -89,6 +90,6 @@ class SurveyService implements ISurveyService{
 
 }
 
-export const getSurveyService = (dbService: IDbService): ISurveyService => {
+export const getSurveyService = async (dbService: IDbService): Promise<ISurveyService> => {
     return new SurveyService(dbService)
 }

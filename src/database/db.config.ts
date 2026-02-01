@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import { appConfig } from "../common/app-config";
+import { appConfig } from "../common/config/app-config";
 
 
 export class ConnectDB {

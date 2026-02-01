@@ -10,7 +10,7 @@ class DbService implements IDbService {
         return await User.create({
             name: data.name,
             email: data.email,
-            passwordHash: data.hashedPassword,
+            passwordHash: data.passwordHash,
             role: data.role,
         });
     }
@@ -47,6 +47,6 @@ class DbService implements IDbService {
       }
 }
 
-export const getDbService = (): IDbService => {
+export const getDbService = async (): Promise<IDbService> => {
     return new DbService();
 }

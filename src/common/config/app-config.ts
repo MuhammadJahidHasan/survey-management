@@ -10,6 +10,7 @@ export interface IAppConfig {
     DB_HOST: string;
     DB_PORT: string;
     JWT_SECRET: string;
+    APP_ENV: string;
 }
 
 export const appConfig: IAppConfig = {
@@ -20,5 +21,6 @@ export const appConfig: IAppConfig = {
     DB_HOST: process.env.DB_HOST!,
     DB_PORT: process.env.DB_PORT!,
     JWT_SECRET: process.env.JWT_SECRET!,
+    APP_ENV: process.env.APP_ENV || 'development',
 
 }
