@@ -2,15 +2,13 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable
+COPY package.json package-lock.json ./
 
-COPY package.json yarn.lock ./
-
-RUN yarn install --immutable
+RUN npm ci
 
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
 
 FROM node:22-alpine AS production
@@ -19,12 +17,10 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN corepack enable
+COPY package.json package-lock.json ./
 
-COPY package.json yarn.lock ./
-
-# For modern Yarn
-RUN yarn workspaces focus --all --production
+RUN npm ci --omit=dev \
+    && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 
